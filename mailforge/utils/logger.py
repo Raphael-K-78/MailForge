@@ -3,7 +3,7 @@ import os
 
 from logging.handlers import RotatingFileHandler
 
-from utils.config import (
+from mailforge.utils.config import (
     log_max_size_mb,
     log_backup_count
 )

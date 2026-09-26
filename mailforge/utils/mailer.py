@@ -1,7 +1,7 @@
-from utils.template import get_template_fields
-from utils.mail import send_mail
-from utils.logger import logger
-from utils.config import MAIL_DOMAINE
+from mailforge.utils.template import get_template_fields
+from mailforge.utils.mail import send_mail
+from mailforge.utils.logger import logger
+from mailforge.utils.config import MAIL_DOMAINE
 
 
 def send(

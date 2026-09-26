@@ -2,7 +2,7 @@ import re
 
 from jinja2 import Template
 
-from utils.logger import logger
+from mailforge.utils.logger import logger
 
 
 def get_templates(templates_dir):

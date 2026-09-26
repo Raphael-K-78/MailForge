@@ -4,12 +4,12 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-from utils.config import (
+from mailforge.utils.config import (
     GMAIL_CREDENTIALS_FILE,
     GMAIL_TOKEN_FILE,
     GMAIL_SCOPES
 )
-from utils.logger import logger
+from mailforge.utils.logger import logger
 
 
 def get_gmail_credentials():

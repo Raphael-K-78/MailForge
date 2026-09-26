@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "MailForge"
+version = "0.1.0"
+description = "Envoi de mails HTML à partir de templates, via Resend ou Gmail API (OAuth 2.0)."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "resend>=2.48.0",
+    "python-dotenv>=1.2.3",
+    "Jinja2>=3.1.6",
+    "google-api-python-client>=2.200.0",
+    "google-auth-oauthlib>=1.4.1",
+    "google-auth-httplib2>=0.4.2",
+]
+
+[tool.setuptools]
+packages = ["mailforge", "mailforge.utils"]

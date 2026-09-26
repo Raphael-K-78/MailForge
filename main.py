@@ -1,12 +1,12 @@
-from utils.template import (
+from mailforge.utils.template import (
     get_templates,
     display_templates,
     get_template_fields
 )
 
-from utils.mailer import send
-from utils.logger import logger
-from utils.config import TEMPLATES_DIR
+from mailforge.utils.mailer import send
+from mailforge.utils.logger import logger
+from mailforge.utils.config import TEMPLATES_DIR
 
 
 def main():

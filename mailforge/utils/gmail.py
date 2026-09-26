@@ -5,8 +5,8 @@ from email.mime.text import MIMEText
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from utils.googleAuth import get_gmail_credentials
-from utils.logger import logger
+from mailforge.utils.googleAuth import get_gmail_credentials
+from mailforge.utils.logger import logger
 
 
 def _build_raw_message(sender, to, subject, html):

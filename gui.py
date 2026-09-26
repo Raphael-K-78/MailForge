@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from utils.mailer import send
-from utils.template import get_templates, get_template_fields
-from utils.config import TEMPLATES_DIR
-from utils.logger import logger
+from mailforge.utils.mailer import send
+from mailforge.utils.template import get_templates, get_template_fields
+from mailforge.utils.config import TEMPLATES_DIR
+from mailforge.utils.logger import logger
 
 
 class MailApp(tk.Tk):

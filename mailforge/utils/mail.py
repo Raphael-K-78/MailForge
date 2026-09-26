@@ -2,12 +2,12 @@ import resend
 
 from resend.exceptions import ResendError
 
-from utils.config import (
+from mailforge.utils.config import (
     resend_api_key,
     MAIL_PROVIDER
 )
-from utils.gmail import send_via_gmail
-from utils.logger import logger
+from mailforge.utils.gmail import send_via_gmail
+from mailforge.utils.logger import logger
 
 resend.api_key = resend_api_key
 
