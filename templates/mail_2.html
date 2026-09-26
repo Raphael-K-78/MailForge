@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Raphaël Kondratiuk - Présentatiopn</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #eeeeee;
+        }
+
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+
+        img {
+            display: block;
+            border: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .wrapper {
+            width: 100%;
+            padding: 40px 15px;
+            background-color: #000000;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            background-color: #0a0a0a;
+            border: 1px solid #222222;
+        }
+
+        /* =========================
+           BANNIÈRE
+        ========================= */
+
+        .banner {
+            position: relative;
+            background-color: #000000;
+            background-image:
+                radial-gradient(1.5px 1.5px at 20px 30px, #ffffff 100%, transparent 0),
+                radial-gradient(1px 1px at 70px 65px, #ffffff 100%, transparent 0),
+                radial-gradient(1.5px 1.5px at 130px 20px, #ffffff 100%, transparent 0),
+                radial-gradient(1px 1px at 180px 55px, #ffffff 100%, transparent 0),
+                radial-gradient(1px 1px at 230px 15px, #ffffff 100%, transparent 0),
+                radial-gradient(1.5px 1.5px at 280px 70px, #ffffff 100%, transparent 0),
+                radial-gradient(1px 1px at 330px 35px, #ffffff 100%, transparent 0),
+                radial-gradient(1px 1px at 380px 60px, #ffffff 100%, transparent 0),
+                radial-gradient(1.5px 1.5px at 430px 25px, #ffffff 100%, transparent 0),
+                radial-gradient(1px 1px at 480px 50px, #ffffff 100%, transparent 0),
+                radial-gradient(1px 1px at 40px 90px, #ffffff 100%, transparent 0),
+                radial-gradient(1.5px 1.5px at 100px 100px, #ffffff 100%, transparent 0),
+                radial-gradient(1px 1px at 160px 95px, #ffffff 100%, transparent 0),
+                radial-gradient(1px 1px at 250px 100px, #ffffff 100%, transparent 0),
+                radial-gradient(1.5px 1.5px at 350px 90px, #ffffff 100%, transparent 0),
+                radial-gradient(1px 1px at 450px 95px, #ffffff 100%, transparent 0),
+                linear-gradient(#000000, #050510);
+            background-repeat: repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat, no-repeat;
+            background-size: 500px 120px, 500px 120px, 500px 120px, 500px 120px, 500px 120px, 500px 120px, 500px 120px, 500px 120px, 500px 120px, 500px 120px, 500px 120px, 500px 120px, 500px 120px, 500px 120px, 500px 120px, 500px 120px, 100% 100%;
+            padding: 55px 30px;
+            text-align: center;
+        }
+
+        .banner-title {
+            margin: 0;
+            color: #ffffff;
+            font-size: 38px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            text-shadow: 0 0 12px rgba(255,255,255,0.35);
+        }
+
+        .banner-subtitle {
+            margin-top: 12px;
+            color: #999999;
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* =========================
+           CONTENU
+        ========================= */
+
+        .content {
+            padding: 45px 40px;
+        }
+
+        .greeting {
+            margin: 0 0 22px;
+            font-size: 25px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .text {
+            margin: 0 0 18px;
+            font-size: 15px;
+            line-height: 1.8;
+            color: #bbbbbb;
+        }
+
+        .name {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* =========================
+           LIENS
+        ========================= */
+
+        .links-title {
+            margin: 35px 0 18px;
+            font-size: 18px;
+            color: #ffffff;
+        }
+
+        .link {
+            border: 1px solid #2a2a2a;
+            background-color: #111111;
+            margin-bottom: 10px;
+        }
+
+        .link:hover {
+            background-color: #1a1a1a;
+        }
+
+        .link-content {
+            padding: 16px;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 14px;
+        }
+
+        .link-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .link-url {
+            margin-top: 4px;
+            font-size: 12px;
+            color: #888888;
+        }
+
+        /* =========================
+           CONTACT
+        ========================= */
+
+        .contact {
+            margin-top: 35px;
+            padding-top: 30px;
+            border-top: 1px solid #2a2a2a;
+            text-align: center;
+        }
+
+        .contact-text {
+            margin: 0 0 20px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #aaaaaa;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #ffffff;
+            color: #000000 !important;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            padding: 25px 30px;
+            background-color: #050505;
+            border-top: 1px solid #2a2a2a;
+            text-align: center;
+        }
+
+        .footer-name {
+            margin: 0 0 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #eeeeee;
+        }
+
+        .footer-text {
+            margin: 0;
+            font-size: 11px;
+            color: #777777;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media screen and (max-width: 600px) {
+
+            .wrapper {
+                padding: 15px 8px;
+            }
+
+            .banner {
+                padding: 45px 20px;
+            }
+
+            .banner-title {
+                font-size: 30px;
+                letter-spacing: 4px;
+            }
+
+            .content {
+                padding: 32px 22px;
+            }
+
+            .greeting {
+                font-size: 22px;
+            }
+
+            .text {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<table class="wrapper" width="100%" role="presentation">
+
+    <tr>
+        <td align="center">
+
+            <table class="container" width="100%" role="presentation">
+
+                <!-- =========================
+                     BANNIÈRE
+                ========================== -->
+
+                <tr>
+                    <td class="banner">
+
+                        <h1 class="banner-title">
+                            RAPH
+                        </h1>
+
+                        <div class="banner-subtitle">
+                            Developer · Creator · Technology
+                        </div>
+
+                    </td>
+                </tr>
+
+
+                <!-- =========================
+                     CONTENU
+                ========================== -->
+
+                <tr>
+                    <td class="content">
+
+                        <h2 class="greeting">
+                            Bonjour {{ prenom }},
+                        </h2>
+
+
+                        <p class="text">
+                            Je suis
+                            <span class="name">
+                                Raphaël Kondratiuk
+                            </span>,
+                            développeur passionné par la création de
+                            logiciels, le web, l'infrastructure et les
+                            nouvelles technologies.
+                        </p>
+
+
+                        <p class="text">
+                            Je développe régulièrement des projets personnels
+                            afin d'expérimenter de nouvelles technologies,
+                            apprendre de nouvelles choses et documenter
+                            mon travail.
+                        </p>
+
+
+                        <!-- =========================
+                             LIENS
+                        ========================== -->
+
+                        <h3 class="links-title">
+                            Quelques liens
+                        </h3>
+
+
+                        <!-- Documentation -->
+
+                        <table class="link" width="100%" role="presentation">
+
+                            <tr>
+
+                                <td class="link-content">
+
+                                    <a href="https://docs.raphael-k-78.fr.eu.org/">
+
+                                        <table role="presentation">
+
+                                            <tr>
+
+                                                <td valign="middle">
+
+                                                    <img
+                                                        class="icon"
+                                                        src="https://cdn.simpleicons.org/bookstack/ffffff"
+                                                        width="24"
+                                                        height="24"
+                                                        alt="Documentation"
+                                                    >
+
+                                                </td>
+
+                                                <td valign="middle">
+
+                                                    <div class="link-name">
+                                                        Raph Docs
+                                                    </div>
+
+                                                    <div class="link-url">
+                                                        docs.raphael-k-78.fr.eu.org
+                                                    </div>
+
+                                                </td>
+
+                                            </tr>
+
+                                        </table>
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+
+                        <!-- GitHub -->
+
+                        <table class="link" width="100%" role="presentation">
+
+                            <tr>
+
+                                <td class="link-content">
+
+                                    <a href="https://github.com/Raphael-K-78">
+
+                                        <table role="presentation">
+
+                                            <tr>
+
+                                                <td valign="middle">
+
+                                                    <img
+                                                        class="icon"
+                                                        src="https://cdn.simpleicons.org/github/ffffff"
+                                                        width="24"
+                                                        height="24"
+                                                        alt="GitHub"
+                                                    >
+
+                                                </td>
+
+                                                <td valign="middle">
+
+                                                    <div class="link-name">
+                                                        GitHub
+                                                    </div>
+
+                                                    <div class="link-url">
+                                                        github.com/Raphael-K-78
+                                                    </div>
+
+                                                </td>
+
+                                            </tr>
+
+                                        </table>
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+
+                        <!-- Gitea -->
+
+                        <table class="link" width="100%" role="presentation">
+
+                            <tr>
+
+                                <td class="link-content">
+
+                                    <a href="https://gitea.raphael-k-78.fr.eu.org/">
+
+                                        <table role="presentation">
+
+                                            <tr>
+
+                                                <td valign="middle">
+
+                                                    <img
+                                                        class="icon"
+                                                        src="https://cdn.simpleicons.org/gitea/ffffff"
+                                                        width="24"
+                                                        height="24"
+                                                        alt="Gitea"
+                                                    >
+
+                                                </td>
+
+                                                <td valign="middle">
+
+                                                    <div class="link-name">
+                                                        Gitea
+                                                    </div>
+
+                                                    <div class="link-url">
+                                                        gitea.raphael-k-78.fr.eu.org
+                                                    </div>
+
+                                                </td>
+
+                                            </tr>
+
+                                        </table>
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+
+                        <!-- Portfolio -->
+
+                        <table class="link" width="100%" role="presentation">
+
+                            <tr>
+
+                                <td class="link-content">
+
+                                    <a href="https://raphael-k-78.github.io/">
+
+                                        <table role="presentation">
+
+                                            <tr>
+
+                                                <td valign="middle">
+
+                                                    <img
+                                                        class="icon"
+                                                        src="https://cdn.simpleicons.org/githubpages/ffffff"
+                                                        width="24"
+                                                        height="24"
+                                                        alt="Portfolio"
+                                                    >
+
+                                                </td>
+
+                                                <td valign="middle">
+
+                                                    <div class="link-name">
+                                                        Portfolio
+                                                    </div>
+
+                                                    <div class="link-url">
+                                                        raphael-k-78.github.io
+                                                    </div>
+
+                                                </td>
+
+                                            </tr>
+
+                                        </table>
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+
+                        <!-- =========================
+                             CONTACT
+                        ========================== -->
+
+                        <div class="contact">
+
+                            <p class="contact-text">
+                                N'hésitez pas à me contacter si vous
+                                souhaitez échanger, poser une question
+                                ou simplement discuter d'un projet.
+                            </p>
+
+                            <a
+                                class="button"
+                                href="mailto:mailto:r.v.k.78440@gmail.com"
+                            >
+                                Me contacter
+                            </a>
+
+                        </div>
+
+                    </td>
+                </tr>
+
+
+                <!-- =========================
+                     FOOTER
+                ========================== -->
+
+                <tr>
+
+                    <td class="footer">
+
+                        <p class="footer-name">
+                            Raphaël Kondratiuk
+                        </p>
+
+                        <p class="footer-text">
+                            Developer · Creator · Technology
+                        </p>
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+
+</table>
+
+</body>
+</html>
