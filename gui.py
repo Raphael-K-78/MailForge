@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from main import send
+from utils.mailer import send
 from utils.template import get_templates, get_template_fields
 from utils.config import TEMPLATES_DIR
 from utils.logger import logger
