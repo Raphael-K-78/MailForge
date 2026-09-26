@@ -1,137 +1,99 @@
-import resend
-
-from resend.exceptions import ResendError
-from jinja2 import Template
-from dotenv import load_dotenv
-
-import os
-import sys
-
 from pathlib import Path
 
+from utils.config import mail_domaine
+from utils.logger import logger
+from utils.mail import send_mail
+from utils.template import (
+    get_templates,
+    display_templates,
+    get_template_fields,
+    render_template
+)
 
-# Configuration
-load_dotenv()
 
-resend.api_key = os.getenv("RESEND_API_KEY")
+# Liste des templates
+templates_dir = Path("templates")
 
-mail_from = os.getenv("MAIL_FROM")
-mail_name = os.getenv("MAIL_NAME")
+templates = get_templates(
+    templates_dir
+)
 
-mail_test = [
-    mail.strip()
-    for mail in os.getenv("MAIL_TEST", "").split(",")
-    if mail.strip()
+if not templates:
+    logger.error("Aucun template trouvé")
+    exit()
+
+
+# Informations du mail
+subject = input(
+    "Sujet du mail : "
+).strip()
+
+sender_name = input(
+    "Nom de l'expéditeur : "
+).strip()
+
+sender_username = input(
+    "Identifiant personnel du mail : "
+).strip()
+
+recipient = input(
+    "Destinataire du mail : "
+).strip()
+
+
+# Affichage et choix du template
+display_templates(templates)
+
+template_number = int(
+    input("\nChoix du Template : ")
+)
+
+template_file = templates[
+    template_number - 1
 ]
 
-prenom_test = [
-    prenom.strip()
-    for prenom in os.getenv("PRENOM_TEST", "").split(",")
-    if prenom.strip()
-]
-
-subject_test = os.getenv("SUBJECT_TEST")
-
-dossier = Path("templates")
+logger.info(
+    f"Template sélectionné : {template_file.name}"
+)
 
 
-def get_templates():
-    templates = []
-
-    for fichier in dossier.iterdir():
-
-        if fichier.is_file() and fichier.suffix == ".html":
-            templates.append(fichier)
-
-    return templates
-
-def show_templates(templates):
-    print()
-    for i, fichier in enumerate(templates, start=1):
-        nom = fichier.stem.replace("_", " ")
-        print(f"[{i}] {nom}")
-    print()
+# Champs du template
+fields = get_template_fields(
+    template_file
+)
 
 
-def send_mail(to, prenom, subject, template_file):
-    try:
-        with open(template_file, encoding="utf-8") as f:
-            template = Template(f.read())
-        html = template.render(
-            prenom=prenom
-        )
-        resend.Emails.send({
-            "from": f"{mail_name} <{mail_from}>",
-            "to": to,
-            "subject": subject,
-            "html": html
-        })
-        print(f"[+] Mail envoyé à {to}")
+# Données du template
+data = {}
 
-        return True
-
-    except ResendError as e:
-
-        print(f"[-] Erreur pour {to} : {e}")
-
-        return False
-
-def dev_mode(template_file):
-
-    print()
-    print("[DEV] Mode test activé")
-    print(f"[DEV] {len(mail_test)} destinataire(s)")
-    print()
-
-    for i, mail in enumerate(mail_test):
-
-        if i >= len(prenom_test):
-            print(
-                f"[-] Aucun prénom correspondant pour {mail}"
-            )
-            continue
-
-        send_mail(
-            to=mail,
-            prenom=prenom_test[i],
-            subject=subject_test,
-            template_file=template_file
-        )
-
-def main():
-    templates = get_templates()
-    if not templates:
-        print("[-] Aucun template trouvé.")
-        return
-    
-    print("[+] Templates chargés :")
-    show_templates(templates)
-    choix = input("Choisissez un template : ")
-    try:
-        choix = int(choix)
-        template_file = templates[choix - 1]
-
-    except (ValueError, IndexError):
-
-        print("[-] Template invalide.")
-        return
-
-    print()
-    print(f"[+] Template sélectionné : {template_file.stem}")
-    print()
+for field in fields:
+    data[field] = input(
+        f"{field} : "
+    )
 
 
-
-    if len(sys.argv) > 1 and sys.argv[1].lower() == "dev":
-
-        dev_mode(template_file)
-
-    else:
-
-        print("[+] Mode production")
-        print("[!] Aucun destinataire configuré.")
-        print("[!] Ajoute ici ta logique d'envoi réelle.")
+# Génération du HTML
+html = render_template(
+    template_file,
+    data
+)
 
 
-if __name__ == "__main__":
-    main()
+# Adresse de l'expéditeur
+sender = (
+    f"{sender_name} "
+    f"<{sender_username}@{mail_domaine}>"
+)
+
+logger.info(
+    f"Expéditeur : {sender}"
+)
+
+
+# Envoi du mail
+send_mail(
+    sender=sender,
+    to=recipient,
+    subject=subject,
+    html=html
+)
