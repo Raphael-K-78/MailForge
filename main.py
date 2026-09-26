@@ -1,99 +1,148 @@
-from pathlib import Path
-
-from utils.config import mail_domaine
-from utils.logger import logger
-from utils.mail import send_mail
 from utils.template import (
     get_templates,
     display_templates,
-    get_template_fields,
-    render_template
+    get_template_fields
+)
+
+from utils.mail import send_mail
+from utils.logger import logger
+from utils.config import (
+    TEMPLATES_DIR,
+    MAIL_DOMAINE
 )
 
 
-# Liste des templates
-templates_dir = Path("templates")
+def send(
+    subject,
+    sender_name,
+    sender_email,
+    recipient,
+    template,
+    template_data
+):
+    """
+    Prépare et envoie un mail à partir de toutes les informations fournies.
+    """
 
-templates = get_templates(
-    templates_dir
-)
+    logger.info(f"Préparation de l'envoi à {recipient}")
+    logger.info(f"Template sélectionné : {template.name}")
 
-if not templates:
-    logger.error("Aucun template trouvé")
-    exit()
+    fields = get_template_fields(template)
 
+    with open(template, encoding="utf-8") as f:
+        html = f.read()
 
-# Informations du mail
-subject = input(
-    "Sujet du mail : "
-).strip()
+    for field in fields:
+        value = template_data.get(field, "")
 
-sender_name = input(
-    "Nom de l'expéditeur : "
-).strip()
+        html = html.replace(
+            "{{" + field + "}}",
+            str(value)
+        )
 
-sender_username = input(
-    "Identifiant personnel du mail : "
-).strip()
-
-recipient = input(
-    "Destinataire du mail : "
-).strip()
-
-
-# Affichage et choix du template
-display_templates(templates)
-
-template_number = int(
-    input("\nChoix du Template : ")
-)
-
-template_file = templates[
-    template_number - 1
-]
-
-logger.info(
-    f"Template sélectionné : {template_file.name}"
-)
-
-
-# Champs du template
-fields = get_template_fields(
-    template_file
-)
-
-
-# Données du template
-data = {}
-
-for field in fields:
-    data[field] = input(
-        f"{field} : "
+    logger.info(
+        f"Expéditeur : {sender_name} <{sender_email}>"
     )
 
+    try:
+        sender = f"{sender_name} <{sender_email}@{MAIL_DOMAINE}>"
+        
+        result = send_mail(
+            sender=sender,
+            to=recipient,
+            subject=subject,
+            html=html
+        )
 
-# Génération du HTML
-html = render_template(
-    template_file,
-    data
-)
+        return result
+
+    except Exception as e:
+        logger.error(
+            f"Erreur lors de l'envoi à {recipient} : {e}"
+        )
+
+        return None
 
 
-# Adresse de l'expéditeur
-sender = (
-    f"{sender_name} "
-    f"<{sender_username}@{mail_domaine}>"
-)
+def main():
+    logger.info("=== Démarrage de l'envoi d'un mail ===")
 
-logger.info(
-    f"Expéditeur : {sender}"
-)
+    print("=== Envoi d'un mail ===\n")
+
+    subject = input("Sujet du mail : ")
+    sender_name = input("Nom de l'expéditeur : ")
+    sender_email = input("Identifiant personnel du mail : ")
+    recipient = input("Destinataire du mail : ")
+
+    logger.info(f"Sujet : {subject}")
+    logger.info(f"Nom de l'expéditeur : {sender_name}")
+    logger.info(f"Identifiant personnel du mail : {sender_email}")
+    logger.info(f"Destinataire : {recipient}")
+
+    templates = get_templates(TEMPLATES_DIR)
+
+    if not templates:
+        logger.error(
+            f"Aucun template trouvé dans : {TEMPLATES_DIR}"
+        )
+        print("[-] Aucun template disponible.")
+        return
+
+    logger.info(
+        f"{len(templates)} template(s) trouvé(s)"
+    )
+
+    display_templates(templates)
+
+    while True:
+        try:
+            choice = int(input("Template : "))
+
+            if 1 <= choice <= len(templates):
+                break
+
+            print("[-] Template invalide.")
+            logger.warning("Numéro de template invalide.")
+
+        except ValueError:
+            print("[-] Veuillez entrer un numéro.")
+            logger.warning(
+                "Entrée invalide pour le choix du template."
+            )
+
+    template_file = templates[choice - 1]
+
+    logger.info(
+        f"Template sélectionné : {template_file.name}"
+    )
+
+    fields = get_template_fields(template_file)
+
+    template_data = {}
+
+    if fields:
+        print("\nDonnées du template :")
+
+        for field in fields:
+            value = input(f"{field} : ")
+            template_data[field] = value
+
+    else:
+        logger.info(
+            "Aucun champ dynamique dans le template"
+        )
+
+    send(
+        subject=subject,
+        sender_name=sender_name,
+        sender_email=sender_email,
+        recipient=recipient,
+        template=template_file,
+        template_data=template_data
+    )
+
+    logger.info("=== Fin de l'envoi ===")
 
 
-# Envoi du mail
-send_mail(
-    sender=sender,
-    to=recipient,
-    subject=subject,
-    html=html
-)
+if __name__ == "__main__":
+    main()

@@ -10,6 +10,7 @@ def get_templates(templates_dir):
         fichier
         for fichier in templates_dir.iterdir()
         if fichier.is_file()
+        and fichier.name != ".gitkeep"
     ]
 
 
