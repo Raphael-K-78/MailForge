@@ -123,6 +123,10 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
+# Google OAuth (Gmail API)
+token.json
+credentials.json
+
 # Environments
 .env
 .venv

@@ -2,18 +2,17 @@ import resend
 
 from resend.exceptions import ResendError
 
-from utils.config import resend_api_key
+from utils.config import (
+    resend_api_key,
+    MAIL_PROVIDER
+)
+from utils.gmail import send_via_gmail
 from utils.logger import logger
 
 resend.api_key = resend_api_key
 
 
-def send_mail(
-    sender,
-    to,
-    subject,
-    html
-):
+def _send_via_resend(sender, to, subject, html):
     try:
         response = resend.Emails.send({
             "from": sender,
@@ -34,3 +33,15 @@ def send_mail(
         )
 
         return None
+
+
+def send_mail(
+    sender,
+    to,
+    subject,
+    html
+):
+    if MAIL_PROVIDER == "gmail":
+        return send_via_gmail(sender, to, subject, html)
+
+    return _send_via_resend(sender, to, subject, html)
