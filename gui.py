@@ -1,12 +1,179 @@
+import html
 from pathlib import Path
 
 import tkinter as tk
+from tkinter import font as tkfont
 from tkinter import filedialog, ttk, messagebox
 
 from mailforge.utils.mailer import send
 from mailforge.utils.template import get_templates, get_template_fields
 from mailforge.utils.config import TEMPLATES_DIR
 from mailforge.utils.logger import logger
+
+
+class RichField:
+    """
+    Champ de saisie qui démarre en simple ligne (Entry) et peut s'étendre,
+    via le bouton crayon, en zone de texte multi-lignes avec mise en forme
+    (gras, souligné, surligné, petit texte, exposant).
+    """
+
+    # (tag, icône bouton, config du bouton, wrapper HTML)
+    _STYLES = [
+        ("bold", "B", {"font_weight": "bold"}, "strong"),
+        ("underline", "U", {"font_underline": True}, "u"),
+        ("highlight", "🖍", {"bg": "#fff59d"}, "mark"),
+        ("small", "A⁻", {"font_size_delta": -2}, "small"),
+        ("superscript", "x²", {"font_size_delta": -2, "offset": 6}, "sup"),
+    ]
+
+    def __init__(self, parent):
+        self.frame = ttk.Frame(parent)
+        self.expanded = False
+        self.text = None
+        self.text_container = None
+
+        self.top_row = ttk.Frame(self.frame)
+        self.top_row.pack(side="top", fill="x")
+
+        self.var = tk.StringVar()
+        self.entry = ttk.Entry(self.top_row, textvariable=self.var)
+        self.entry.pack(side="left", fill="x", expand=True)
+
+        self.toggle_btn = ttk.Button(
+            self.top_row, text="✎", width=3, command=self._toggle
+        )
+        self.toggle_btn.pack(side="left", padx=(4, 0))
+
+    def pack(self, **kwargs):
+        self.frame.pack(**kwargs)
+
+    def _toggle(self):
+        if self.expanded:
+            self._collapse()
+        else:
+            self._expand()
+
+    def _expand(self):
+        current = self.var.get()
+
+        self.entry.pack_forget()
+
+        self.text_container = ttk.Frame(self.frame)
+        self.text_container.pack(side="top", fill="x", pady=(4, 0))
+
+        toolbar = ttk.Frame(self.text_container)
+        toolbar.pack(fill="x")
+
+        self.text = tk.Text(self.text_container, height=4, width=1, wrap="word")
+
+        base_font = tkfont.Font(font=self.text.cget("font"))
+
+        for tag, icon, style, _ in self._STYLES:
+            self._add_style_button(toolbar, tag, icon, style)
+
+            tag_font = base_font.copy()
+            tag_font.configure(
+                weight="bold" if style.get("font_weight") else tag_font.cget("weight"),
+                underline=style.get("font_underline", False),
+                size=base_font.cget("size") + style.get("font_size_delta", 0)
+            )
+
+            self.text.tag_configure(
+                tag,
+                font=tag_font,
+                background=style.get("bg", ""),
+                offset=style.get("offset", 0)
+            )
+
+        self.text.pack(fill="x", expand=True, pady=(2, 0))
+        self.text.insert("1.0", current)
+
+        self.expanded = True
+        self.toggle_btn.configure(text="↩")
+
+    def _add_style_button(self, parent, tag, icon, style):
+        button_font = ("Segoe UI", 9, "bold" if style.get("font_weight") else "normal")
+
+        btn = tk.Button(
+            parent,
+            text=icon,
+            width=3,
+            font=button_font,
+            underline=0 if style.get("font_underline") else -1,
+            bg=style.get("bg", "SystemButtonFace"),
+            relief="raised",
+            command=lambda: self._toggle_tag(tag)
+        )
+        btn.pack(side="left", padx=(0, 2))
+
+    def _collapse(self):
+        self.var.set(self.text.get("1.0", "end-1c"))
+
+        self.text_container.destroy()
+        self.text_container = None
+        self.text = None
+
+        self.entry.pack(side="left", fill="x", expand=True, before=self.toggle_btn)
+
+        self.expanded = False
+        self.toggle_btn.configure(text="✎")
+
+    def _toggle_tag(self, tag):
+        try:
+            start, end = self.text.index("sel.first"), self.text.index("sel.last")
+        except tk.TclError:
+            return
+
+        if tag in self.text.tag_names(start):
+            self.text.tag_remove(tag, start, end)
+        else:
+            self.text.tag_add(tag, start, end)
+
+    def get_value(self):
+        if not self.expanded:
+            return self.var.get()
+
+        return self._render_html()
+
+    def _char_offset(self, index):
+        result = self.text.count("1.0", index, "chars")
+        return result[0] if result else 0
+
+    def _active_tags_at(self, char_index):
+        names = self.text.tag_names(f"1.0+{char_index}c")
+        return {tag for tag, *_ in self._STYLES if tag in names}
+
+    def _wrap(self, element, style, chunk):
+        if element == "mark":
+            return f'<span style="background-color:{style["bg"]};">{chunk}</span>'
+
+        return f"<{element}>{chunk}</{element}>"
+
+    def _render_html(self):
+        content = self.text.get("1.0", "end-1c")
+        n = len(content)
+
+        pieces = []
+        i = 0
+
+        while i < n:
+            current_tags = self._active_tags_at(i)
+
+            j = i
+            while j < n and self._active_tags_at(j) == current_tags:
+                j += 1
+
+            chunk = html.escape(content[i:j])
+
+            for tag, _, style, element in self._STYLES:
+                if tag in current_tags:
+                    chunk = self._wrap(element, style, chunk)
+
+            pieces.append(chunk)
+            i = j
+
+        return "".join(pieces).replace("\n", "<br>\n")
 
 
 class MailApp(tk.Tk):
@@ -41,9 +208,7 @@ class MailApp(tk.Tk):
             )
             logger.error(f"Aucun template trouvé dans : {TEMPLATES_DIR}")
 
-    # ------------------------------------------------------------------
     # Construction de l'interface
-    # ------------------------------------------------------------------
 
     def _build_static_fields(self):
         frame = ttk.Frame(self, padding=10)
@@ -111,7 +276,11 @@ class MailApp(tk.Tk):
             lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
 
-        canvas.create_window((0, 0), window=self.fields_frame, anchor="nw")
+        window_id = canvas.create_window((0, 0), window=self.fields_frame, anchor="nw")
+        canvas.bind(
+            "<Configure>",
+            lambda e: canvas.itemconfig(window_id, width=e.width)
+        )
         canvas.configure(yscrollcommand=scrollbar.set)
 
         canvas.pack(side="left", fill="both", expand=True)
@@ -191,10 +360,7 @@ class MailApp(tk.Tk):
             padding=(10, 4)
         ).pack(fill="x", side="bottom")
 
-    # ------------------------------------------------------------------
     # Comportement
-    # ------------------------------------------------------------------
-
     def _on_template_selected(self, event=None):
         for widget in self.fields_frame.winfo_children():
             widget.destroy()
@@ -222,14 +388,12 @@ class MailApp(tk.Tk):
             row = ttk.Frame(self.fields_frame)
             row.pack(fill="x", pady=2)
 
-            ttk.Label(row, text=f"{field} :", width=20).pack(side="left")
+            ttk.Label(row, text=f"{field} :", width=20).pack(side="left", anchor="n")
 
-            var = tk.StringVar()
-            ttk.Entry(row, textvariable=var).pack(
-                side="left", fill="x", expand=True
-            )
+            rich_field = RichField(row)
+            rich_field.pack(side="left", fill="x", expand=True)
 
-            self.field_vars[field] = var
+            self.field_vars[field] = rich_field
 
     def _get_selected_template(self):
         index = self.template_combo.current()
@@ -262,8 +426,8 @@ class MailApp(tk.Tk):
             return
 
         template_data = {
-            field: var.get()
-            for field, var in self.field_vars.items()
+            field: rich_field.get_value()
+            for field, rich_field in self.field_vars.items()
         }
 
         logger.info(f"Sujet : {subject}")
