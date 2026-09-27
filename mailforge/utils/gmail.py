@@ -8,15 +8,15 @@ from email.mime.text import MIMEText
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+from mailforge.utils.attachments import read_attachment_bytes
 from mailforge.utils.googleAuth import get_gmail_credentials
 from mailforge.utils.logger import logger
 
 
 def _build_mime_part(item, inline):
-    with open(item["path"], "rb") as f:
-        data = f.read()
+    data, remote_ctype = read_attachment_bytes(item)
 
-    ctype, _ = mimetypes.guess_type(str(item["path"]))
+    ctype = remote_ctype or mimetypes.guess_type(item["filename"])[0]
     maintype, subtype = ctype.split("/", 1) if ctype else ("application", "octet-stream")
 
     if maintype == "image":
@@ -24,7 +24,7 @@ def _build_mime_part(item, inline):
     else:
         part = MIMEApplication(data, _subtype=subtype)
 
-    filename = item.get("filename", item["path"].name)
+    filename = item["filename"]
 
     if inline:
         part.add_header("Content-ID", f"<{item['content_id']}>")

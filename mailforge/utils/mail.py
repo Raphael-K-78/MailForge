@@ -6,6 +6,7 @@ from mailforge.utils.config import (
     resend_api_key,
     MAIL_PROVIDER
 )
+from mailforge.utils.attachments import read_attachment_bytes
 from mailforge.utils.gmail import send_via_gmail
 from mailforge.utils.logger import logger
 
@@ -16,11 +17,10 @@ def _build_resend_attachments(inline_attachments, attachments):
     result = []
 
     for item in (inline_attachments or []) + (attachments or []):
-        with open(item["path"], "rb") as f:
-            content = f.read()
+        content, _ = read_attachment_bytes(item)
 
         entry = {
-            "filename": item.get("filename", item["path"].name),
+            "filename": item["filename"],
             "content": list(content)
         }
 

@@ -1,4 +1,4 @@
-from mailforge.utils.template import get_template_fields
+from mailforge.utils.template import get_template_fields, render_template
 from mailforge.utils.mail import send_mail
 from mailforge.utils.attachments import extract_inline_attachments
 from mailforge.utils.logger import logger
@@ -21,18 +21,9 @@ def send(
     logger.info(f"Préparation de l'envoi à {recipient}")
     logger.info(f"Template sélectionné : {template.name}")
 
-    fields = get_template_fields(template)
+    get_template_fields(template)
 
-    with open(template, encoding="utf-8") as f:
-        html = f.read()
-
-    for field in fields:
-        value = template_data.get(field, "")
-
-        html = html.replace(
-            "{{" + field + "}}",
-            str(value)
-        )
+    html = render_template(template, template_data)
 
     html, inline_attachments = extract_inline_attachments(html, template.parent)
 
