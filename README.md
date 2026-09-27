@@ -32,7 +32,14 @@ Petit outil Python pour envoyer des mails HTML personnalisés (CLI ou interface 
 - Python 3.10+
 - Un compte [Resend](https://resend.com) **ou** un projet [Google Cloud](https://console.cloud.google.com) avec la Gmail API activée (selon le fournisseur choisi)
 
-## Installation
+## Installation rapide (Windows)
+
+Double-clique sur `Installer_et_Lancer.bat` :
+
+- Premier lancement : crée le `.venv`, installe les dépendances, demande le fournisseur d'envoi (**Resend** *ou* **Gmail**, pas les deux), le domaine d'expédition, le fichier `credentials.json` (si Gmail) et propose un dossier de templates personnalisé (ex. sur `C:\`). Écrit tout ça dans `.env`.
+- Lancements suivants : détecte que tout est déjà configuré et ouvre directement l'interface graphique.
+
+## Installation (manuelle / autres OS)
 
 ```bash
 git clone <url-du-repo>
