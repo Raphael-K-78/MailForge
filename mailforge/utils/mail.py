@@ -39,9 +39,15 @@ def send_mail(
     sender,
     to,
     subject,
-    html
+    html,
+    inline_attachments=None,
+    attachments=None
 ):
     if MAIL_PROVIDER == "gmail":
-        return send_via_gmail(sender, to, subject, html)
+        return send_via_gmail(
+            sender, to, subject, html,
+            inline_attachments=inline_attachments,
+            attachments=attachments
+        )
 
     return _send_via_resend(sender, to, subject, html)

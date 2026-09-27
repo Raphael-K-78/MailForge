@@ -1,5 +1,6 @@
 from mailforge.utils.template import get_template_fields
 from mailforge.utils.mail import send_mail
+from mailforge.utils.attachments import extract_inline_attachments
 from mailforge.utils.logger import logger
 from mailforge.utils.config import MAIL_DOMAINE
 
@@ -32,6 +33,8 @@ def send(
             str(value)
         )
 
+    html, inline_attachments = extract_inline_attachments(html, template.parent)
+
     logger.info(
         f"Expéditeur : {sender_name} <{sender_email}>"
     )
@@ -43,7 +46,8 @@ def send(
             sender=sender,
             to=recipient,
             subject=subject,
-            html=html
+            html=html,
+            inline_attachments=inline_attachments
         )
 
         return result
