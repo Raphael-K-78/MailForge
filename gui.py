@@ -1,5 +1,7 @@
+from pathlib import Path
+
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import filedialog, ttk, messagebox
 
 from mailforge.utils.mailer import send
 from mailforge.utils.template import get_templates, get_template_fields
@@ -18,15 +20,17 @@ class MailApp(tk.Tk):
         super().__init__()
 
         self.title("Envoi de mail")
-        self.geometry("520x600")
+        self.geometry("520x720")
         self.resizable(False, False)
 
         self.templates = get_templates(TEMPLATES_DIR)
         self.field_vars = {}
+        self.attachments = []
 
         self._build_static_fields()
         self._build_template_selector()
         self._build_dynamic_fields_area()
+        self._build_attachments_area()
         self._build_send_button()
         self._build_status_bar()
 
@@ -112,6 +116,60 @@ class MailApp(tk.Tk):
 
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
+
+    def _build_attachments_area(self):
+        outer = ttk.LabelFrame(self, text="Pièces jointes", padding=10)
+        outer.pack(fill="x", padx=10, pady=(0, 10))
+
+        buttons = ttk.Frame(outer)
+        buttons.pack(fill="x", pady=(0, 6))
+
+        ttk.Button(
+            buttons,
+            text="Ajouter des fichiers...",
+            command=self._on_add_attachments
+        ).pack(side="left")
+
+        ttk.Button(
+            buttons,
+            text="Retirer la sélection",
+            command=self._on_remove_attachment
+        ).pack(side="left", padx=(6, 0))
+
+        list_frame = ttk.Frame(outer)
+        list_frame.pack(fill="x")
+
+        scrollbar = ttk.Scrollbar(list_frame, orient="vertical")
+        self.attachments_list = tk.Listbox(
+            list_frame,
+            height=5,
+            selectmode="extended",
+            yscrollcommand=scrollbar.set
+        )
+        scrollbar.config(command=self.attachments_list.yview)
+
+        self.attachments_list.pack(side="left", fill="x", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+    def _on_add_attachments(self):
+        paths = filedialog.askopenfilenames(title="Choisir des pièces jointes")
+
+        for path in paths:
+            path = Path(path)
+
+            if path not in self.attachments:
+                self.attachments.append(path)
+                self.attachments_list.insert("end", path.name)
+
+        if paths:
+            logger.info(f"{len(paths)} pièce(s) jointe(s) ajoutée(s)")
+
+    def _on_remove_attachment(self):
+        selection = list(self.attachments_list.curselection())
+
+        for index in reversed(selection):
+            self.attachments_list.delete(index)
+            del self.attachments[index]
 
     def _build_send_button(self):
         frame = ttk.Frame(self, padding=10)
@@ -222,7 +280,8 @@ class MailApp(tk.Tk):
             sender_email=sender_email,
             recipient=recipient,
             template=template_file,
-            template_data=template_data
+            template_data=template_data,
+            attachments=self.attachments
         )
 
         if result is not None:

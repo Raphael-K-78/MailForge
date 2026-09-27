@@ -11,7 +11,8 @@ def send(
     sender_email,
     recipient,
     template,
-    template_data
+    template_data,
+    attachments=None
 ):
     """
     Prépare et envoie un mail à partir de toutes les informations fournies.
@@ -47,7 +48,11 @@ def send(
             to=recipient,
             subject=subject,
             html=html,
-            inline_attachments=inline_attachments
+            inline_attachments=inline_attachments,
+            attachments=[
+                {"path": path, "filename": path.name}
+                for path in (attachments or [])
+            ]
         )
 
         return result
